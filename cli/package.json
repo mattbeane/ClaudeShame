@@ -1,7 +1,7 @@
 {
   "name": "zp",
   "version": "0.1.0",
-  "description": "Zeitgeist Police CLI",
+  "description": "ClaudeShame CLI",
   "license": "MIT",
   "bin": {
     "zp": "zp.js"

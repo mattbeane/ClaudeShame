@@ -4,12 +4,12 @@ const path = require('path');
 const os = require('os');
 
 const SHAME_URL = process.env.ZP_SHAME_URL || 'http://localhost:3000';
-const CONFIG_DIR = path.join(os.homedir(), '.config', 'zeitgeist-police');
+const CONFIG_DIR = path.join(os.homedir(), '.config', 'claude-shame');
 const CONFIG_PATH = path.join(CONFIG_DIR, 'config.json');
 const PHRASES_PATH = path.join(CONFIG_DIR, 'phrases.json');
 const SETTINGS_PATH = path.join(os.homedir(), '.claude', 'settings.json');
 const REPO_ROOT = path.resolve(__dirname, '..');
-const HOOK_PATH = path.join(REPO_ROOT, 'hooks', 'zeitgeist-police.py');
+const HOOK_PATH = path.join(REPO_ROOT, 'hooks', 'claude-shame.py');
 const BUNDLED_PHRASES = path.join(REPO_ROOT, 'data', 'phrases.json');
 
 async function main() {
@@ -52,7 +52,7 @@ function cmdInit() {
 
   settings.hooks = settings.hooks || {};
   settings.hooks.Stop = settings.hooks.Stop || [];
-  const already = settings.hooks.Stop.some(h => JSON.stringify(h).includes('zeitgeist-police.py'));
+  const already = settings.hooks.Stop.some(h => JSON.stringify(h).includes('claude-shame.py'));
   if (already) {
     console.log('Hook already installed. No changes made.');
     return;
@@ -73,7 +73,7 @@ function cmdInit() {
     }
   });
 
-  console.log('✅ Zeitgeist Police installed.');
+  console.log('✅ ClaudeShame installed.');
   console.log(`Chalkboard URL: ${SHAME_URL}`);
   console.log('Restart Claude Code (or start a new session) for the hook to take effect.');
 }
@@ -86,7 +86,7 @@ function cmdUninstall() {
   }
   const before = settings.hooks.Stop.length;
   settings.hooks.Stop = settings.hooks.Stop.filter(
-    h => !JSON.stringify(h).includes('zeitgeist-police.py')
+    h => !JSON.stringify(h).includes('claude-shame.py')
   );
   if (settings.hooks.Stop.length === before) {
     console.log('Hook not present in settings.');
@@ -221,7 +221,7 @@ async function getJson(url) {
 }
 
 function printHelp() {
-  console.log(`Zeitgeist Police - When Claude tics, Claude pays.
+  console.log(`ClaudeShame - When Claude tics, Claude pays.
 
 Usage: zp <command> [options]
 

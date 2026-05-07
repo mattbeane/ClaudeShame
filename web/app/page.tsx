@@ -85,7 +85,7 @@ export default function Page() {
   return (
     <main>
       <header className="site-head">
-        <h1>Zeitgeist Police</h1>
+        <h1>Claude Shame</h1>
         <p className="tagline">When Claude tics, Claude pays.</p>
         <nav className="site-nav">
           <Link href="/" className="active">chalkboard</Link>

@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'Zeitgeist Police — Public Chalkboard',
+  title: 'Claude Shame — Public Chalkboard',
   description: 'When Claude tics, Claude pays. Public shame board for overused Claude phrases.',
 };
 

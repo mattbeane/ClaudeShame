@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Zeitgeist Police — Claude Code Stop hook.
+"""ClaudeShame — Claude Code Stop hook.
 
 Reads the last assistant message from the transcript, scans for overused phrases,
 and on first match: sets a sentinel, POSTs to the chalkboard, and blocks Claude
@@ -18,7 +18,7 @@ import urllib.error
 import urllib.request
 from pathlib import Path
 
-CONFIG_DIR = Path.home() / ".config" / "zeitgeist-police"
+CONFIG_DIR = Path.home() / ".config" / "claude-shame"
 SENTINEL_DIR = CONFIG_DIR / "sentinels"
 PHRASES_PATH = CONFIG_DIR / "phrases.json"
 USER_CONFIG_PATH = CONFIG_DIR / "config.json"
