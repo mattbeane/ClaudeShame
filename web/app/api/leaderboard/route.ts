@@ -8,6 +8,6 @@ export async function GET(req: Request) {
     ? (winRaw as 'all-time' | 'week' | 'by-model')
     : 'all-time';
 
-  const entries = getLeaderboard(win);
+  const entries = await getLeaderboard(win);
   return NextResponse.json({ window: win, entries });
 }

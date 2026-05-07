@@ -16,7 +16,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ w
   const win: Window = (['all-time', 'week', 'by-model'] as const).includes(params.window as Window)
     ? (params.window as Window)
     : 'all-time';
-  const entries = getLeaderboard(win);
+  const entries = await getLeaderboard(win);
 
   return (
     <main>

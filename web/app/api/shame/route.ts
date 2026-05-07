@@ -23,11 +23,11 @@ export async function POST(req: Request) {
     );
   }
 
-  if (!checkRateLimit(v.data.sessionFingerprint)) {
+  if (!(await checkRateLimit(v.data.sessionFingerprint))) {
     return NextResponse.json({ error: 'rate limited' }, { status: 429 });
   }
 
-  const shaming = appendShaming({
+  const shaming = await appendShaming({
     phrase: v.data.phrase,
     count: v.data.count,
     model: v.data.model,

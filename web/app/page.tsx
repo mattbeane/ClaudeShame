@@ -78,8 +78,8 @@ function LogEntry({ shaming }: { shaming: Shaming }) {
   );
 }
 
-export default function Page() {
-  const shamings = getFeed(50);
+export default async function Page() {
+  const shamings = await getFeed(50);
   const [latest, ...rest] = shamings;
 
   return (
