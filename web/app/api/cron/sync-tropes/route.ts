@@ -57,11 +57,18 @@ export async function GET(req: Request) {
     }
   }
 
+  // Filter junk: too-common verbs/articles, too-short, too-long-to-be-a-tic, known bad
   const STOP_LIST = new Set([
     'and friends', 'serves as', 'stands as', 'avoid patterns like',
+    'is', 'are', 'was', 'were', 'be', 'been', 'being',
+    'and', 'or', 'but', 'the', 'a', 'an', 'of', 'to', 'in', 'on', 'at',
+    'i', 'you', 'we', 'they', 'it', 'this', 'that',
   ]);
   const newCandidates: string[] = [];
   for (const phrase of candidates) {
+    if (phrase.length < 3) continue;
+    const wordCount = phrase.trim().split(/\s+/).length;
+    if (wordCount > 4) continue;
     if (STOP_LIST.has(phrase)) continue;
     if (isValidPhrase(phrase)) continue;
     newCandidates.push(phrase);
