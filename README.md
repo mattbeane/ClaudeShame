@@ -52,7 +52,7 @@ The hook POSTs to whatever URL is in `ZP_SHAME_URL` (defaults to `http://localho
 
 ## Phrase list
 
-Curated in `data/phrases.json`. PRs welcome — community submissions land in `data/pending.json` via the chalkboard's submission form. False positives in the active list trigger real punishments and clog the chalkboard, so the moderation bar is intentionally high.
+Curated in `web/data/phrases.json`. PRs welcome — community submissions land in `web/data/pending.json` (dev) or in Redis (production) via the chalkboard's submission form. False positives in the active list trigger real punishments and clog the chalkboard, so the moderation bar is intentionally high.
 
 ## Loop safety
 

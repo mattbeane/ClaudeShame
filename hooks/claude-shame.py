@@ -124,7 +124,7 @@ def strip_punishment_lines(text: str) -> str:
 def load_phrases():
     candidates = [
         PHRASES_PATH,
-        Path(__file__).resolve().parent.parent / "data" / "phrases.json",
+        Path(__file__).resolve().parent.parent / "web" / "data" / "phrases.json",
     ]
     for p in candidates:
         if p.exists():

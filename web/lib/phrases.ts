@@ -1,7 +1,7 @@
 import { readFileSync, existsSync, writeFileSync, mkdirSync } from 'fs';
 import { join, dirname } from 'path';
 import { Redis } from '@upstash/redis';
-import phrasesJson from '../../data/phrases.json';
+import phrasesJson from '../data/phrases.json';
 
 export type PhraseEntry = { phrase: string; regex: string; addedAt: string };
 export type PhrasesDoc = { version: number; updatedAt: string; phrases: PhraseEntry[] };
@@ -9,7 +9,6 @@ export type PhrasesDoc = { version: number; updatedAt: string; phrases: PhraseEn
 const PENDING_KEY = 'cs:pending';
 const PENDING_CANDIDATES = [
   join(process.cwd(), 'data', 'pending.json'),
-  join(process.cwd(), '..', 'data', 'pending.json'),
 ];
 
 function getRedis(): Redis | null {

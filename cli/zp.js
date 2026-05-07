@@ -10,7 +10,7 @@ const PHRASES_PATH = path.join(CONFIG_DIR, 'phrases.json');
 const SETTINGS_PATH = path.join(os.homedir(), '.claude', 'settings.json');
 const REPO_ROOT = path.resolve(__dirname, '..');
 const HOOK_PATH = path.join(REPO_ROOT, 'hooks', 'claude-shame.py');
-const BUNDLED_PHRASES = path.join(REPO_ROOT, 'data', 'phrases.json');
+const BUNDLED_PHRASES = path.join(REPO_ROOT, 'web', 'data', 'phrases.json');
 
 async function main() {
   const [cmd, ...rest] = process.argv.slice(2);
