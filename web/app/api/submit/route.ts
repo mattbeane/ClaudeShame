@@ -15,6 +15,6 @@ export async function POST(req: Request) {
   if (!phrase) return NextResponse.json({ error: 'phrase required' }, { status: 400 });
   if (phrase.length > 100) return NextResponse.json({ error: 'phrase too long' }, { status: 400 });
 
-  appendPending(phrase);
+  await appendPending(phrase);
   return NextResponse.json({ ok: true });
 }
