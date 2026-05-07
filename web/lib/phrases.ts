@@ -5,6 +5,7 @@ import phrasesJson from '../data/phrases.json';
 
 export type PhraseEntry = { phrase: string; regex: string; addedAt: string };
 export type PhrasesDoc = { version: number; updatedAt: string; phrases: PhraseEntry[] };
+export type PendingEntry = { phrase: string; submittedAt: string; source?: string };
 
 const PENDING_KEY = 'cs:pending';
 const PENDING_CANDIDATES = [
@@ -26,27 +27,58 @@ export function isValidPhrase(phrase: string): boolean {
   return (phrasesJson as PhrasesDoc).phrases.some((e) => e.phrase === phrase);
 }
 
-export async function appendPending(phrase: string): Promise<void> {
+function parsePending(item: unknown): PendingEntry | null {
+  if (typeof item === 'string') {
+    try { return JSON.parse(item) as PendingEntry; } catch { return null; }
+  }
+  if (item && typeof item === 'object' && 'phrase' in item) return item as PendingEntry;
+  return null;
+}
+
+export async function getPending(): Promise<PendingEntry[]> {
+  const r = getRedis();
+  if (r) {
+    const items = (await r.lrange(PENDING_KEY, 0, -1)) as unknown[];
+    return items.map(parsePending).filter((x): x is PendingEntry => x !== null);
+  }
+  const p = findPath(PENDING_CANDIDATES);
+  if (!p) return [];
+  try {
+    const data = JSON.parse(readFileSync(p, 'utf-8'));
+    return (data.submissions || []) as PendingEntry[];
+  } catch {
+    return [];
+  }
+}
+
+export async function appendPending(phrase: string, source?: string): Promise<boolean> {
+  const entry: PendingEntry = {
+    phrase,
+    submittedAt: new Date().toISOString(),
+    ...(source ? { source } : {}),
+  };
+
   const r = getRedis();
   if (r) {
     const existing = (await r.lrange(PENDING_KEY, 0, -1)) as unknown[];
     const seen = existing.some((item) => {
-      const parsed = typeof item === 'string' ? safeParse(item) : item;
-      return parsed && typeof parsed === 'object' && (parsed as { phrase?: string }).phrase === phrase;
+      const parsed = parsePending(item);
+      return parsed?.phrase === phrase;
     });
-    if (seen) return;
-    await r.rpush(PENDING_KEY, JSON.stringify({ phrase, submittedAt: new Date().toISOString() }));
-    return;
+    if (seen) return false;
+    await r.rpush(PENDING_KEY, JSON.stringify(entry));
+    return true;
   }
 
   const p = findPath(PENDING_CANDIDATES);
-  if (!p) return;
+  if (!p) return false;
   const data = JSON.parse(readFileSync(p, 'utf-8'));
   data.submissions = data.submissions || [];
-  if (data.submissions.some((s: { phrase: string }) => s.phrase === phrase)) return;
-  data.submissions.push({ phrase, submittedAt: new Date().toISOString() });
+  if (data.submissions.some((s: { phrase: string }) => s.phrase === phrase)) return false;
+  data.submissions.push(entry);
   mkdirSync(dirname(p), { recursive: true });
   writeFileSync(p, JSON.stringify(data, null, 2));
+  return true;
 }
 
 function findPath(candidates: string[]): string | null {
@@ -54,8 +86,4 @@ function findPath(candidates: string[]): string | null {
     if (existsSync(c)) return c;
   }
   return null;
-}
-
-function safeParse(s: string): unknown {
-  try { return JSON.parse(s); } catch { return null; }
 }

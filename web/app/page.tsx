@@ -90,6 +90,7 @@ export default async function Page() {
         <nav className="site-nav">
           <Link href="/" className="active">chalkboard</Link>
           <Link href="/leaderboard">leaderboard</Link>
+          <Link href="/submissions">submissions</Link>
         </nav>
       </header>
 

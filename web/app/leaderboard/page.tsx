@@ -26,6 +26,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ w
         <nav className="site-nav">
           <Link href="/">chalkboard</Link>
           <Link href="/leaderboard" className="active">leaderboard</Link>
+          <Link href="/submissions">submissions</Link>
         </nav>
       </header>
 

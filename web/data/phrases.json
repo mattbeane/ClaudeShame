@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "updatedAt": "2026-05-07",
   "phrases": [
     { "phrase": "load-bearing", "regex": "\\bload[- ]bearing\\b", "addedAt": "2026-05-07" },
@@ -31,6 +31,16 @@
     { "phrase": "testament to", "regex": "\\ba testament to\\b", "addedAt": "2026-05-07" },
     { "phrase": "unleash", "regex": "\\bunleash(?:es|ed|ing)?\\b", "addedAt": "2026-05-07" },
     { "phrase": "leverage", "regex": "\\bleverag(?:e|es|ed|ing)\\b", "addedAt": "2026-05-07" },
-    { "phrase": "ecosystem", "regex": "\\becosystem\\b", "addedAt": "2026-05-07" }
+    { "phrase": "ecosystem", "regex": "\\becosystem\\b", "addedAt": "2026-05-07" },
+    { "phrase": "you're absolutely right", "regex": "\\byou'?re absolutely (?:right|correct)\\b", "addedAt": "2026-05-07" },
+    { "phrase": "pivotal", "regex": "\\bpivotal(?:ly)?\\b", "addedAt": "2026-05-07" },
+    { "phrase": "showcase", "regex": "\\bshowcas(?:e|es|ed|ing)\\b", "addedAt": "2026-05-07" },
+    { "phrase": "underscore", "regex": "\\bunderscor(?:e|es|ed|ing)\\b", "addedAt": "2026-05-07" },
+    { "phrase": "meticulous", "regex": "\\bmeticulous(?:ly|ness)?\\b", "addedAt": "2026-05-07" },
+    { "phrase": "intricate", "regex": "\\bintric(?:ate|acies|acy)\\b", "addedAt": "2026-05-07" },
+    { "phrase": "vibrant", "regex": "\\bvibrant(?:ly)?\\b", "addedAt": "2026-05-07" },
+    { "phrase": "let me know if", "regex": "\\blet me know if (?:you|there|this|that|anything|you'?d|the|i)\\b", "addedAt": "2026-05-07" },
+    { "phrase": "I hope this helps", "regex": "\\bI hope (?:this|that)?\\s*(?:helps|is helpful)\\b", "addedAt": "2026-05-07" },
+    { "phrase": "deep dive", "regex": "\\b(?:deep[- ]div(?:e|es|ing)|(?:let'?s |we'?ll )?div(?:e|ing) (?:in|into|deeper|deep))\\b", "addedAt": "2026-05-07" }
   ]
 }

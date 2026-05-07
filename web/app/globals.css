@@ -421,6 +421,46 @@ table.lb td.model {
   font-size: 1.2rem;
 }
 
+/* ─── Submissions ─── */
+
+.submissions-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-bottom: 1.25rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px dashed rgba(255, 252, 240, 0.2);
+}
+
+.src-pill {
+  background: rgba(0, 0, 0, 0.25);
+  color: var(--chalk-dim);
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  font-family: 'Caveat', cursive;
+  font-size: 1.2rem;
+  border: 1px dashed rgba(255, 252, 240, 0.25);
+}
+
+.src-pill strong {
+  color: var(--chalk-yellow);
+  font-weight: 700;
+  margin-left: 0.4rem;
+}
+
+.submissions-log .log-entry {
+  font-size: 1.5rem;
+}
+
+.submissions-log .log-entry .source-tag {
+  color: var(--chalk-blue);
+  font-size: 1.1rem;
+  font-style: italic;
+  background: rgba(0, 0, 0, 0.2);
+  padding: 0.05rem 0.45rem;
+  border-radius: 3px;
+}
+
 /* ─── Footer ─── */
 
 footer.site-foot {
