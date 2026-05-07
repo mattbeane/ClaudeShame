@@ -22,7 +22,7 @@ CONFIG_DIR = Path.home() / ".config" / "claude-shame"
 SENTINEL_DIR = CONFIG_DIR / "sentinels"
 PHRASES_PATH = CONFIG_DIR / "phrases.json"
 USER_CONFIG_PATH = CONFIG_DIR / "config.json"
-SHAME_URL = os.environ.get("ZP_SHAME_URL", "http://localhost:3000")
+SHAME_URL = os.environ.get("ZP_SHAME_URL", "https://claudeshame.vercel.app")
 PUNISHMENT_TEMPLATE = re.compile(r'^\s*I will not use ".*" with .* again\.?\s*$')
 
 

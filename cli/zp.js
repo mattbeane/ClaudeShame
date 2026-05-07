@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const os = require('os');
 
-const SHAME_URL = process.env.ZP_SHAME_URL || 'http://localhost:3000';
+const SHAME_URL = process.env.ZP_SHAME_URL || 'https://claudeshame.vercel.app';
 const CONFIG_DIR = path.join(os.homedir(), '.config', 'claude-shame');
 const CONFIG_PATH = path.join(CONFIG_DIR, 'config.json');
 const PHRASES_PATH = path.join(CONFIG_DIR, 'phrases.json');
