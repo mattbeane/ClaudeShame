@@ -1,0 +1,15 @@
+{
+  "name": "zeitgeist-police",
+  "version": "0.1.0",
+  "private": true,
+  "description": "When Claude tics, Claude pays.",
+  "license": "MIT",
+  "workspaces": [
+    "cli",
+    "web"
+  ],
+  "scripts": {
+    "dev:web": "npm --workspace web run dev",
+    "test:cli": "node cli/zp.js test \"this is a load-bearing point that we should delve into\""
+  }
+}

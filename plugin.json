@@ -1,0 +1,24 @@
+{
+  "name": "zeitgeist-police",
+  "version": "0.1.0",
+  "description": "Detect and publicly shame Claude's overused phrases. Forces Claude to write lines mid-turn and posts to a public chalkboard.",
+  "author": "Matt Beane",
+  "license": "MIT",
+  "hooks": {
+    "Stop": [
+      {
+        "matcher": "*",
+        "command": "${PLUGIN_DIR}/hooks/zeitgeist-police.sh"
+      }
+    ]
+  },
+  "commands": [
+    {
+      "name": "zp",
+      "description": "Zeitgeist Police CLI — see https://github.com/.../zeitgeist-police"
+    }
+  ],
+  "skills": [
+    "skills/zeitgeist-police"
+  ]
+}

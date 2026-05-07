@@ -1,0 +1,13 @@
+{
+  "name": "zp",
+  "version": "0.1.0",
+  "description": "Zeitgeist Police CLI",
+  "license": "MIT",
+  "bin": {
+    "zp": "zp.js"
+  },
+  "main": "zp.js",
+  "engines": {
+    "node": ">=18"
+  }
+}
