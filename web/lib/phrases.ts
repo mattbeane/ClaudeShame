@@ -51,6 +51,8 @@ export async function getPending(): Promise<PendingEntry[]> {
   }
 }
 
+const PENDING_MAX = 500;
+
 export async function appendPending(phrase: string, source?: string): Promise<boolean> {
   const entry: PendingEntry = {
     phrase,
@@ -60,6 +62,8 @@ export async function appendPending(phrase: string, source?: string): Promise<bo
 
   const r = getRedis();
   if (r) {
+    const len = await r.llen(PENDING_KEY);
+    if (len >= PENDING_MAX) return false;
     const existing = (await r.lrange(PENDING_KEY, 0, -1)) as unknown[];
     const seen = existing.some((item) => {
       const parsed = parsePending(item);
@@ -74,11 +78,33 @@ export async function appendPending(phrase: string, source?: string): Promise<bo
   if (!p) return false;
   const data = JSON.parse(readFileSync(p, 'utf-8'));
   data.submissions = data.submissions || [];
+  if (data.submissions.length >= PENDING_MAX) return false;
   if (data.submissions.some((s: { phrase: string }) => s.phrase === phrase)) return false;
   data.submissions.push(entry);
   mkdirSync(dirname(p), { recursive: true });
   writeFileSync(p, JSON.stringify(data, null, 2));
   return true;
+}
+
+/**
+ * Replace the entire pending list with the given entries. Used by the
+ * cron's cleanup pass to remove entries that fail the current filter.
+ */
+export async function replacePending(entries: PendingEntry[]): Promise<void> {
+  const r = getRedis();
+  if (r) {
+    await r.del(PENDING_KEY);
+    if (entries.length > 0) {
+      await r.rpush(PENDING_KEY, ...entries.map((e) => JSON.stringify(e)));
+    }
+    return;
+  }
+  const p = findPath(PENDING_CANDIDATES);
+  if (!p) return;
+  const data = JSON.parse(readFileSync(p, 'utf-8'));
+  data.submissions = entries;
+  mkdirSync(dirname(p), { recursive: true });
+  writeFileSync(p, JSON.stringify(data, null, 2));
 }
 
 function findPath(candidates: string[]): string | null {

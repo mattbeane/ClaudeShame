@@ -34,7 +34,7 @@ const ensureDir = (p) => fs.mkdirSync(p, { recursive: true });
 const readJson = (p) => { try { return JSON.parse(fs.readFileSync(p, 'utf-8')); } catch { return null; } };
 const writeJson = (p, obj) => { ensureDir(path.dirname(p)); fs.writeFileSync(p, JSON.stringify(obj, null, 2) + '\n'); };
 
-function cmdInit() {
+async function cmdInit() {
   ensureDir(CONFIG_DIR);
 
   if (!fs.existsSync(HOOK_PATH)) {
@@ -66,12 +66,14 @@ function cmdInit() {
   ensureDir(path.dirname(SETTINGS_PATH));
   writeJson(SETTINGS_PATH, settings);
 
-  syncPhrases().catch(() => {
+  try {
+    await syncPhrases();
+  } catch {
     if (fs.existsSync(BUNDLED_PHRASES)) {
       fs.copyFileSync(BUNDLED_PHRASES, PHRASES_PATH);
       console.log('Loaded bundled phrase list (chalkboard unreachable).');
     }
-  });
+  }
 
   console.log('✅ ClaudeShame installed.');
   console.log(`Chalkboard URL: ${SHAME_URL}`);

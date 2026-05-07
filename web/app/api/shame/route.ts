@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { validateShameInput } from '@/lib/validate';
 import { isValidPhrase } from '@/lib/phrases';
-import { appendShaming, checkRateLimit } from '@/lib/store';
+import { appendShaming, checkRateLimit, rateLimit } from '@/lib/store';
 
 export async function POST(req: Request) {
   let body: unknown;
@@ -23,6 +23,9 @@ export async function POST(req: Request) {
     );
   }
 
+  if (!(await rateLimit('cs:rate:shame:global', 60, 60))) {
+    return NextResponse.json({ error: 'rate limited (global)' }, { status: 429 });
+  }
   if (!(await checkRateLimit(v.data.sessionFingerprint))) {
     return NextResponse.json({ error: 'rate limited' }, { status: 429 });
   }

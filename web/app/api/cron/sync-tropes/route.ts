@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { appendPending, isValidPhrase } from '@/lib/phrases';
+import { appendPending, getPending, isValidPhrase, replacePending } from '@/lib/phrases';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 30;
@@ -64,14 +64,28 @@ export async function GET(req: Request) {
     'and', 'or', 'but', 'the', 'a', 'an', 'of', 'to', 'in', 'on', 'at',
     'i', 'you', 'we', 'they', 'it', 'this', 'that',
   ]);
+  const passesFilter = (phrase: string): boolean => {
+    if (phrase.length < 3) return false;
+    const wordCount = phrase.trim().split(/\s+/).length;
+    if (wordCount > 4) return false;
+    if (STOP_LIST.has(phrase)) return false;
+    return true;
+  };
+
   const newCandidates: string[] = [];
   for (const phrase of candidates) {
-    if (phrase.length < 3) continue;
-    const wordCount = phrase.trim().split(/\s+/).length;
-    if (wordCount > 4) continue;
-    if (STOP_LIST.has(phrase)) continue;
+    if (!passesFilter(phrase)) continue;
     if (isValidPhrase(phrase)) continue;
     newCandidates.push(phrase);
+  }
+
+  // Cleanup pass: re-evaluate existing pending against current filter and remove rot.
+  // Idempotent — runs every cron invocation, only writes when something changes.
+  const existing = await getPending();
+  const kept = existing.filter((e) => passesFilter(e.phrase) && !isValidPhrase(e.phrase));
+  const cleanedUp = existing.length - kept.length;
+  if (cleanedUp > 0) {
+    await replacePending(kept);
   }
 
   let added = 0;
@@ -85,6 +99,7 @@ export async function GET(req: Request) {
     fetched: candidates.size,
     notInActive: newCandidates.length,
     added,
+    cleanedUp,
     candidates: newCandidates,
   });
 }

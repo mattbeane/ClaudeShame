@@ -7,6 +7,12 @@ with punishment instructions (write the line 100x).
 
 Single-Python-file design (departs from the bash+python sketch in the plan):
 no measurable benefit to a bash shim here, and one file is cleaner to install.
+
+Hot-path safety: the entire main entrypoint is wrapped in a top-level
+try/except that exits 0 on any unexpected error. A bug in this hook should
+never crash the user's Claude Code session — silent skip is the right
+behavior. POST timeout is intentionally short (1s) so a slow chalkboard
+adds at most 1s to a Claude turn.
 """
 
 import hashlib
@@ -14,6 +20,7 @@ import json
 import os
 import re
 import sys
+import time
 import urllib.error
 import urllib.request
 from pathlib import Path
@@ -24,9 +31,19 @@ PHRASES_PATH = CONFIG_DIR / "phrases.json"
 USER_CONFIG_PATH = CONFIG_DIR / "config.json"
 SHAME_URL = os.environ.get("ZP_SHAME_URL", "https://claudeshame.vercel.app")
 PUNISHMENT_TEMPLATE = re.compile(r'^\s*I will not use ".*" with .* again\.?\s*$')
+SENTINEL_TTL_SEC = 3600  # delete sentinels older than 1 hour
+POST_TIMEOUT_SEC = 1
 
 
 def main() -> None:
+    try:
+        _run()
+    except Exception:
+        # Belt-and-suspenders: a bug here must NEVER break the user's Claude session.
+        sys.exit(0)
+
+
+def _run() -> None:
     try:
         hook_input = json.load(sys.stdin)
     except (json.JSONDecodeError, ValueError):
@@ -44,6 +61,8 @@ def main() -> None:
     msg_uuid = msg.get("uuid", "")
     text = extract_text(msg)
     model = msg.get("message", {}).get("model", "unknown")
+
+    cleanup_old_sentinels()
 
     sentinel = SENTINEL_DIR / f"{session_id}-{msg_uuid}"
     if sentinel.exists():
@@ -83,6 +102,22 @@ def main() -> None:
 
     print(json.dumps({"decision": "block", "reason": reason}))
     sys.exit(0)
+
+
+def cleanup_old_sentinels() -> None:
+    """Best-effort delete of sentinels older than SENTINEL_TTL_SEC."""
+    if not SENTINEL_DIR.exists():
+        return
+    cutoff = time.time() - SENTINEL_TTL_SEC
+    try:
+        for f in SENTINEL_DIR.iterdir():
+            try:
+                if f.stat().st_mtime < cutoff:
+                    f.unlink()
+            except OSError:
+                pass
+    except OSError:
+        pass
 
 
 def read_last_assistant_message(path: str):
@@ -173,7 +208,7 @@ def post_shame(phrase: str, model: str, attribution, fingerprint: str) -> None:
         method="POST",
     )
     try:
-        urllib.request.urlopen(req, timeout=2)
+        urllib.request.urlopen(req, timeout=POST_TIMEOUT_SEC)
     except (urllib.error.URLError, TimeoutError, OSError):
         pass  # chalkboard unreachable — don't break the hook
 
