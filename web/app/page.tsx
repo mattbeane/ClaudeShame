@@ -1,56 +1,113 @@
-import { getFeed } from '@/lib/store';
+import { getFeed, type Shaming } from '@/lib/store';
 import Link from 'next/link';
 
 export const dynamic = 'force-dynamic';
 
+const VISIBLE_LINES = 15;
+
 function formatTime(ts: number): string {
   const d = new Date(ts);
-  const now = Date.now();
-  const diff = now - ts;
+  const diff = Date.now() - ts;
   if (diff < 60_000) return 'just now';
   if (diff < 3_600_000) return `${Math.floor(diff / 60_000)}m ago`;
   if (diff < 86_400_000) return `${Math.floor(diff / 3_600_000)}h ago`;
   return d.toISOString().split('T')[0];
 }
 
+function lineFor(s: Shaming): string {
+  const subject = s.attribution || 'humans';
+  return `I will not use "${s.phrase}" with ${subject} again.`;
+}
+
+function BartBoard({ shaming }: { shaming: Shaming }) {
+  const line = lineFor(shaming);
+  return (
+    <div className="bart-frame">
+      <div className="bart-board">
+        {Array.from({ length: VISIBLE_LINES }).map((_, i) => (
+          <div key={i} className="bart-line">{line}</div>
+        ))}
+      </div>
+      <div className="bart-ledge">
+        <span className="chalk-pieces" aria-hidden="true">
+          <span /><span /><span />
+        </span>
+        <span className="eraser" aria-hidden="true" />
+        <span className="meta">
+          <strong>×{shaming.count}</strong>
+          <span>·</span>
+          <span>{shaming.model}</span>
+          <span>·</span>
+          <span>{formatTime(shaming.timestamp)}</span>
+        </span>
+      </div>
+    </div>
+  );
+}
+
+function EmptyBoard() {
+  return (
+    <div className="bart-frame">
+      <div className="bart-board">
+        <div className="bart-empty">
+          <div className="big">The chalkboard is clean.</div>
+          <div className="small">(For now.)</div>
+        </div>
+      </div>
+      <div className="bart-ledge">
+        <span className="chalk-pieces" aria-hidden="true">
+          <span /><span /><span />
+        </span>
+        <span className="eraser" aria-hidden="true" />
+        <span className="meta">awaiting first offense</span>
+      </div>
+    </div>
+  );
+}
+
+function LogEntry({ shaming }: { shaming: Shaming }) {
+  return (
+    <div className="log-entry">
+      <span className="phrase">"{shaming.phrase}"</span>
+      <span className="count">×{shaming.count}</span>
+      <span className="model">{shaming.model}</span>
+      <span className="meta">
+        {shaming.attribution || 'anonymous'} · {formatTime(shaming.timestamp)}
+      </span>
+    </div>
+  );
+}
+
 export default function Page() {
   const shamings = getFeed(50);
+  const [latest, ...rest] = shamings;
 
   return (
     <main>
-      <header>
+      <header className="site-head">
         <h1>Zeitgeist Police</h1>
         <p className="tagline">When Claude tics, Claude pays.</p>
-        <nav>
+        <nav className="site-nav">
           <Link href="/" className="active">chalkboard</Link>
           <Link href="/leaderboard">leaderboard</Link>
         </nav>
       </header>
 
-      {shamings.length === 0 ? (
-        <div className="empty">
-          The chalkboard is clean.<br />
-          (For now.)
-        </div>
-      ) : (
-        <div className="feed">
-          {shamings.map((s) => (
-            <div key={s.id} className="shaming">
-              <span className="phrase">"{s.phrase}"</span>
-              <span className="count">×{s.count}</span>
-              <span className="model">{s.model}</span>
-              <span className="meta">
-                {s.attribution || 'anonymous'} · {formatTime(s.timestamp)}
-              </span>
-            </div>
-          ))}
-        </div>
+      {latest ? <BartBoard shaming={latest} /> : <EmptyBoard />}
+
+      {rest.length > 0 && (
+        <section className="log-section">
+          <h2>Earlier offenses</h2>
+          <div className="logbook">
+            {rest.map((s) => <LogEntry key={s.id} shaming={s} />)}
+          </div>
+        </section>
       )}
 
-      <footer>
+      <footer className="site-foot">
         <p>
           Phrases are curated. Submit one via{' '}
-          <code>zp submit &quot;your phrase&quot;</code> or open a PR.
+          <code>zp submit "your phrase"</code> or open a PR.
         </p>
       </footer>
     </main>
