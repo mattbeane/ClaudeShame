@@ -28,6 +28,16 @@ export async function GET(req: Request) {
     return NextResponse.json({ ok: false, error: `fetch failed: ${(e as Error).message}` }, { status: 502 });
   }
 
+  // tropes.fyi serves the markdown verbatim inside HTML — decode entities so the
+  // existing quote-matching regex works against the embedded plain text.
+  md = md
+    .replace(/&quot;/g, '"')
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&#39;/g, "'")
+    .replace(/&apos;/g, "'");
+
   const wordChoiceMatch = md.match(/##\s+Word Choice([\s\S]*?)(?=\n##\s+|$)/i);
   if (!wordChoiceMatch) {
     return NextResponse.json({ ok: false, error: 'word choice section not found in tropes-md' }, { status: 500 });
