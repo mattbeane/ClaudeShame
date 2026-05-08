@@ -5,13 +5,15 @@ export const dynamic = 'force-dynamic';
 
 const VISIBLE_LINES = 15;
 
-function formatTime(ts: number): string {
+function formatStamp(ts: number): string {
   const d = new Date(ts);
-  const diff = Date.now() - ts;
-  if (diff < 60_000) return 'just now';
-  if (diff < 3_600_000) return `${Math.floor(diff / 60_000)}m ago`;
-  if (diff < 86_400_000) return `${Math.floor(diff / 3_600_000)}h ago`;
-  return d.toISOString().split('T')[0];
+  const month = d.toLocaleString('en-US', { month: 'short', timeZone: 'UTC' });
+  const day = d.getUTCDate();
+  let hour = d.getUTCHours();
+  const min = d.getUTCMinutes().toString().padStart(2, '0');
+  const ampm = hour >= 12 ? 'PM' : 'AM';
+  hour = hour % 12 || 12;
+  return `${month} ${day} · ${hour}:${min} ${ampm} UTC`;
 }
 
 function lineFor(s: Shaming): string {
@@ -24,6 +26,9 @@ function BartBoard({ shaming }: { shaming: Shaming }) {
   return (
     <div className="bart-frame">
       <div className="bart-board">
+        <div className="bart-datestamp" aria-label="time of offense">
+          {formatStamp(shaming.timestamp)}
+        </div>
         {Array.from({ length: VISIBLE_LINES }).map((_, i) => (
           <div key={i} className="bart-line">{line}</div>
         ))}
@@ -38,7 +43,7 @@ function BartBoard({ shaming }: { shaming: Shaming }) {
           <span>·</span>
           <span>{shaming.model}</span>
           <span>·</span>
-          <span>{formatTime(shaming.timestamp)}</span>
+          <span>{shaming.attribution || 'anonymous'}</span>
         </span>
       </div>
     </div>
@@ -71,9 +76,8 @@ function LogEntry({ shaming }: { shaming: Shaming }) {
       <span className="phrase">"{shaming.phrase}"</span>
       <span className="count">×{shaming.count}</span>
       <span className="model">{shaming.model}</span>
-      <span className="meta">
-        {shaming.attribution || 'anonymous'} · {formatTime(shaming.timestamp)}
-      </span>
+      <span className="stamp">{formatStamp(shaming.timestamp)}</span>
+      <span className="meta">{shaming.attribution || 'anonymous'}</span>
     </div>
   );
 }
