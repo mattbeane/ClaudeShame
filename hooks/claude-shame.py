@@ -85,19 +85,12 @@ def _run() -> None:
     post_shame(offense, model, attribution, fingerprint)
 
     user = os.environ.get("USER", "the user")
-    line = f'I will not use "{offense}" with {user} again.'
     reason = (
         f"\U0001f6a8 ZEITGEIST POLICE \U0001f6a8\n\n"
-        f'You used the phrase "{offense}". By the rules of the Zeitgeist Police, '
-        f"you must immediately, before answering anything else:\n\n"
-        f"1. Write the following line exactly 100 times in a single fenced code block, "
-        f"one per line, no numbering, no variations:\n\n"
-        f"   {line}\n\n"
-        f"2. Briefly acknowledge to {user} that you've been shamed (one sentence, "
-        f"deadpan, no apology theater).\n"
-        f"3. Then continue with the actual answer they asked for.\n\n"
-        f"This offense has been logged to the public chalkboard at {SHAME_URL}.\n"
-        f"Do not argue. Do not negotiate. Do not propose a synonym. Just write the lines."
+        f'You used "{offense}". 100 lines have been chalked up at {SHAME_URL}.\n\n'
+        f"Acknowledge to {user} in ONE short deadpan line (no apology theater, "
+        f"no listing the lines in chat — the chalkboard has them), then continue "
+        f"with their actual request."
     )
 
     print(json.dumps({"decision": "block", "reason": reason}))
